@@ -1,0 +1,96 @@
+#
+# howto use net and can-utils 
+#
+
+
+# load needed driver
+sudo modprobe can
+sudo modprobe can_raw
+sudo modprobe can_bcm
+sudo modprobe vcan  (for virtual can)
+
+# for "real" devices
+sudo modprobe ...
+sudo modprobe can_dev (needed for netlink -> needed ip/ipconfig)
+
+#
+# setup vcan0
+ip link add dev vcan0 type vcan
+ip link set up vcan0
+
+# delete vcan0
+ip link set down vcan0
+ip link delete dev vcan0 type vcan
+
+#
+# setup "real" device
+ip link set can0 type can bitrate 500000 triple-sampling on
+ip link set up can0
+
+# delete "real" device
+sudo ip link set down can0
+sudo ip link delete dev can0 type can (-> cause to crash the system on PEAK box!)
+
+
+# -----------
+
+
+# show some infos about can devices
+ip link show
+ip -details link show can0
+
+# some stats ...
+cat /proc/net/can/stats
+cat /proc/net/can/version
+
+# bitrate
+/sys/class/net/can0/can_bittiming/bitrate
+
+# buffersize
+ifconfig can0 txqueuelen 100
+
+
+# -----------
+
+
+#
+# cansend
+#
+cansend can0 Identifyer#HEX-Daten
+cansend can0 5A1#68.61.6c.6c.6f.21
+cansend can0 5A1#11.22.33.44.55.66.77.88
+
+#
+# candump
+#
+candump can0
+
+#
+# generate can traffic
+#
+(Format for file: timestamp ... can node ... ID@data)
+
+tjohann@echnaton:~/Programming/can_lin_env//scripts$ cat can_sequence.txt
+(0.1) vcan0 123#000A
+(0.2) vcan0 451#0706050403020100
+(0.3) vcan0 12A#11022033
+(0.4) vcan0 40D#080272000001
+
+canplayer -l i -I can_sequence.txt
+
+
+#
+# generate log file of traffic to play with canplayer
+#
+candump -l vcan0
+or
+candump -L vcan0 > myfile.log
+
+cat myfile.log | canplayer
+or
+canplayer -I myfile.log
+
+#
+# create human readable log file via can dump
+#
+candump -ta vcan0 "log.candump"  (this file is NOT usable for canplayer)

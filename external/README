@@ -1,0 +1,17 @@
+README external repos
+=========
+
+Content cloned via script get_external_git_repos.sh (all additional repos) or via make tag like "make get_uboot" for u-boot repo
+
+
+Addtional Repos
+-------------------
+
+	# can-utils -> https://github.com/linux-can/can-utils.git
+	# jailhouse -> https://github.com/siemens/jailhouse.git
+	# lin -> git://rtime.felk.cvut.cz/linux-lin.git
+
+
+
+
+

@@ -1,0 +1,8 @@
+#
+# some news ... see also TODO for hints
+#
+
+2016-07-21 -> initial code skeleton for can and lin on linux
+	   -> add some basic scripts to use vcan0
+
+2016-07-20 -> initial skeleton

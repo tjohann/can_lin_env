@@ -1,0 +1,34 @@
+#
+# some hints/infos about the socketcan api
+#
+
+#
+# read <linux-source-tree>/Documenation/networking/can.txt
+#
+
+#
+# number of possible addresses
+#
+2048 SFF CAN identifiers
+2^29 EFF CAN identifiers
+
+#
+# can header
+#
+<linux-source-tree>/include/uapi/linux/can/can.h
+
+#
+# error codes for handling userspace error frames
+#
+<linux-source-tree>/include/uapi/linux/can/error.h
+
+#
+# To bind a socket to all CAN if
+#
+-> means: addr.can_ifindex = 0;
+
+#
+# number of possible addresses
+#
+2048 SFF CAN identifiers
+2^29 EFF CAN identifiers
