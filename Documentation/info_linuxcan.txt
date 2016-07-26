@@ -1,0 +1,26 @@
+#
+# some info about can socket (linux)
+#
+
+
+#
+# main sentence (taken from can.txt and adapt it)
+#
+
+- SocketCAN uses the Berkeley socket API, the Linux network stack and implements the CAN device drivers as network interfaces
+
+- A device driver for CAN controller hardware registers itself with the Linux network layer as a network device, so that CAN frames from the controller can be passed up to the network layer and on to the CAN protocol family module and also vice-versa
+
+- The protocol family module provides an API for transport protocol modules to register, so that any number of transport protocols can be loaded or unloaded dynamically
+
+- Multiple sockets can be opened at the same time, on different or the same protocol module and they can listen/send frames on different or the same CAN IDs
+
+- Several sockets listening on the same interface for frames with the same CAN ID are all passed the same received matching CAN frames
+
+- An application wishing to communicate using a specific transport protocol, e.g. ISO-TP, just selects that protocol when opening the socket, and then can read and write application data byte streams, without having to deal with CAN-IDs, frames, etc
+
+- Whenever an error on the physical layer or the MAC layer is detected (e.g. by the CAN controller) the driver creates an appropriate error message frame
+
+- Error messages frames can be requested by the user application using the common CAN filter mechanisms
+
+

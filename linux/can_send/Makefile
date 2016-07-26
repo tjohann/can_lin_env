@@ -3,17 +3,17 @@
 #
 
 CC = gcc
-CFLAGS = -Wall -Wextra -std=gnu11
-LIBS = -I../libcan -I../libhelper -L../libhelper -lhelper -L../libcan -lcan -lpthread -lrt 
+CFLAGS = -Wall -Wextra -std=gnu11 `pkg-config --cflags libcap-ng`
+LDLIBS = -I../libcan -I../libhelper -L../libhelper -L../libcan -lhelper -lcan -lpthread -lrt `pkg-config --libs libcap-ng`
 
 PROG = can_send
 OBJ = can_send.o
 
 %.o: %.c
-	$(CC) -c -o $@ $< $(CFLAGS) $(LIBS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(LDLIBS)
 
 $(PROG): $(OBJ)
-	gcc -o $@ $^ $(CFLAGS) $(LIBS)
+	gcc -o $@ $^ $(CFLAGS) $(LDLIBS)
 
 install: $(PROG)
 	install $(PROG) $(HOME)/bin/$(PROG)
@@ -28,4 +28,13 @@ clean:
 
 distclean: clean
 
-.PHONY: clean install uninstall
+setup_vcan:
+	(../../scripts/vcan_init.sh)
+
+delete_vcan:
+	(../../scripts/vcan_delete.sh)
+
+rmmod_vcan:
+	(../../scripts/vcan_rmmod.sh)
+
+.PHONY: clean install uninstall rmmod_vcan delete_vcan setup_vcan

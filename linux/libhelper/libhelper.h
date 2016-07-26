@@ -48,14 +48,13 @@
 #include <sysexits.h>
 #include <ctype.h>
 #include <pthread.h>
-#include <bsd/stdlib.h>
 #include <sys/utsname.h>
-#include <sched.h>
 #include <time.h>
 #include <sys/times.h>
 #include <sys/sysinfo.h>
-#include <semaphore.h>
 #include <sys/syscall.h>
+#include <sys/socket.h>
+#include <net/if.h>
 
 // libcap-ng
 #include <cap-ng.h>
@@ -63,31 +62,12 @@
 #define eprintf(format, ...) fprintf (stderr, format, ##__VA_ARGS__)
 
 
-/*
- * common defines
- * -------------
- */
-
-
-/*
- * common macros
- * -------------
- */
-
-
-/*
- * common types
- * -------------
- */
-
-
-/*
- * helper.c
- * ========
- */
-
 /* drop all capabilitys excluding hold_cap */
 int
 drop_capability(int hold_cap);
+
+/* string to lower */
+char *
+strlwr(char* str);
 
 #endif

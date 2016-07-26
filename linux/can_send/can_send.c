@@ -25,31 +25,161 @@ static const char *program_name;
 static void
 __attribute__((noreturn)) usage(void)
 {
-	fprintf(stdout, "Usage: ./can_send -[hai]      \n");
-	fprintf(stdout, "       -i vcan0 -> interface  \n");
-	fprintf(stdout, "       -a 0x123 -> can addr   \n");
-	fprintf(stdout, "       -h -> show this help   \n");
+	fprintf(stdout, "Usage: ./can_send -[haipt]                 \n");
+	fprintf(stdout, "       -i vcan0     -> interface           \n");
+	fprintf(stdout, "       -a 0x123     -> can addr            \n");
+	fprintf(stdout, "       -t 100       -> cylic time 100ms    \n");
+	fprintf(stdout, "       -p [raw/bcm] -> can socket protocol \n");
+	fprintf(stdout, "       -h           -> show this help      \n");
 	putchar('\n');
 
 	exit(EXIT_FAILURE);
+}
+
+void *
+print_error_frames(void *arg)
+{
+	char *ifname = (char *) arg;
+
+	int ifname_s = can_raw_socket(ifname, NULL, 0);
+	if (ifname_s == -1) {
+		eprintf("ERROR -> could not init can_node %s\n", ifname);
+		return NULL;
+	}
+
+	struct can_filter rfilter;
+	rfilter.can_id   = 0x00;
+	rfilter.can_mask = CAN_SFF_MASK;
+	setsockopt(ifname_s, SOL_CAN_RAW, CAN_RAW_FILTER,
+		   &rfilter, sizeof(rfilter));
+
+	/* set all hardware related error mask bits */
+	if (set_hw_error_mask(ifname_s) == -1) {
+		eprintf("ERROR: could not set error mask\n");
+		return NULL;
+	}
+
+	struct can_frame frame;
+	struct timeval tv;
+	ssize_t recv_nbytes = -1;
+	for (;;) {
+		memset(&frame, 0, sizeof(frame));
+		memset(&tv, 0, sizeof(tv));
+
+		recv_nbytes = read(ifname_s, &frame, sizeof(struct can_frame));
+		if (recv_nbytes == -1) {
+			perror("read in print_error_frames");
+			continue;
+		}
+
+		if (ioctl(ifname_s, SIOCGSTAMP, &tv) == -1)
+			perror("ioctl in print_error_frames");
+
+		if (frame.can_id & CAN_ERR_FLAG)
+			printf("!-----! An ERROR flag is set !-----!\n");
+
+		printf("%s: received message -> frame.id:0x%x / frame.can_dlc:%d @ time:%s",
+		       __FUNCTION__, frame.can_id, frame.can_dlc,
+		       ctime((const time_t *) &tv.tv_sec));
+
+		for (int i = 0; i < frame.can_dlc; i++)
+			printf("frame.data[%d] -> 0x%.2x\n", i, frame.data[i]);
+	}
+
+	/* should never reached */
+	close(ifname_s);
+
+	return NULL;
+}
+
+void
+send_cyclic_telegram(char *ifname, unsigned long can_addr,
+		     unsigned long cycle_time_ms)
+{
+	int fds = can_raw_socket(ifname, NULL, 0);
+	if (fds == -1) {
+		eprintf("ERROR -> could not init can_node %s for CAN_RAW\n",
+			ifname);
+		exit(EXIT_FAILURE);
+	}
+
+	struct can_frame frame;
+	memset(&frame, 0, sizeof(frame));
+
+	frame.can_id  = can_addr;
+	frame.can_dlc = 2;
+
+	struct timespec t;
+	memset(&t, 0, sizeof(struct timespec));
+
+	/* sleep time 0.1 sec */
+	t.tv_sec = 0;
+	t.tv_nsec = cycle_time_ms * 1000000;
+
+	ssize_t send_nbytes = -1;
+	for (;;) {
+		send_nbytes = write(fds, &frame, sizeof(struct can_frame));
+		if (send_nbytes == -1) {
+			perror("sendto");
+			/* stop sending for some time -> user recognize it */
+			sleep(4);
+			continue;
+		}
+
+		if (frame.data[1] == 0xfe)
+			frame.data[1] = 0;
+		else
+			frame.data[1] += 1;
+
+		clock_nanosleep(CLOCK_MONOTONIC, 0, &t, NULL);
+	}
+
+	/* should never reached */
+	close(fds);
+}
+
+void
+send_cyclic_telegram_via_bcm(char *ifname, unsigned long can_addr,
+			     unsigned long cycle_time_ms)
+{
+	int fds = can_bcm_socket(ifname, NULL, 0);
+	if (fds == -1) {
+		eprintf("ERROR -> could not init can_node %s for CAN_BCM\n",
+			ifname);
+		exit(EXIT_FAILURE);
+	}
+
+	sleep(20);
+
+	printf("Not yet implemented\n");
+	close(fds);
+
+	exit(EXIT_SUCCESS);
 }
 
 int
 main(int argc, char *argv[])
 {
 	unsigned long can_addr = 0;
+	unsigned long cycle_time_ms = 0;
 	char *ifname = NULL;
+	char *can_proto = NULL;
 
 	int c;
-	while ((c = getopt(argc, argv, "hei:a:")) != -1) {
+	while ((c = getopt(argc, argv, "hei:a:p:t:")) != -1) {
 		switch (c) {
 		case 'i':
 			ifname = optarg;
 			break;
+		case 'p':
+			can_proto = optarg;
+			break;
 		case 'a':
 			can_addr = strtoul(optarg, NULL, 16);
 			break;
-
+		case 't':
+			cycle_time_ms = strtoul(optarg, NULL, 10);
+			break;
 		case 'h':
 			usage();
 			break;
@@ -64,20 +194,44 @@ main(int argc, char *argv[])
 	else
 		printf("Will use %s as canif\n", ifname);
 
+	if (can_proto == NULL)
+		usage();
+	else
+		printf("Will use can_%s as can protocol\n", can_proto);
+
 	if (can_addr == 0)
 		usage();
 	else
 		printf("Will use addr 0x%x\n", (int) can_addr);
 
-	program_name = PROGRAM_NAME;
+	if (cycle_time_ms == 0)
+		eprintf("No cyclic time defined");
+	else
+		printf("Cyclic time is %lu ms\n", cycle_time_ms );
 
-	can_node_t cnode;
-	if (can_raw_server(&cnode, ifname, can_addr) == -1) {
-		fprintf(stderr, "ERROR -> could not init can_node %s\n", ifname);
+	program_name = PROGRAM_NAME;
+	strlwr(can_proto);
+
+	/* thread to receive hardware related error frames -> print the frame */
+	pthread_t tid;
+	int ret = pthread_create(&tid, NULL, print_error_frames, ifname);
+	if (ret != 0) {
+		errno = ret;
+		perror("pthread_create");
 		exit(EXIT_FAILURE);
 	}
 
-	sleep(20);
+	if (strncmp(can_proto, "raw", 3) == 0)
+		send_cyclic_telegram(ifname, can_addr, cycle_time_ms);
 
-	return EXIT_SUCCESS;
+	if (strncmp(can_proto, "bcm", 3) == 0)
+		send_cyclic_telegram_via_bcm(ifname, can_addr, cycle_time_ms);
+
+
+	/* should never reached */
+	eprintf("ERROR -> something went wrong, you should never reach this\n");
+
+	(void) pthread_join(tid, NULL);
+
+	exit(EXIT_SUCCESS);
 }

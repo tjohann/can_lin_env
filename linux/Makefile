@@ -61,4 +61,13 @@ clean:
 
 distclean: clean
 
-.PHONY: clean libhelper libcan can_send can_recv liblin lin_send lin_recv install uninstall
+setup_vcan:
+	(../scripts/vcan_init.sh)
+
+delete_vcan:
+	(../scripts/vcan_delete.sh)
+
+rmmod_vcan:
+	(../scripts/vcan_rmmod.sh)
+
+.PHONY: clean libhelper libcan can_send can_recv liblin lin_send lin_recv install uninstall setup_vcan delete_vcab rmmod_vcan

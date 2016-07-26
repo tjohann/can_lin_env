@@ -19,8 +19,9 @@
 
 #include "libhelper.h"
 
+#define LIBHELPER_EXPORT __attribute__ ((visibility ("default")))
 
-int
+LIBHELPER_EXPORT int
 drop_capability(int hold_cap)
 {
 	capng_clear(CAPNG_SELECT_BOTH);
@@ -36,4 +37,16 @@ drop_capability(int hold_cap)
 	capng_apply(CAPNG_SELECT_BOTH);
 
 	return 0;
+}
+
+
+LIBHELPER_EXPORT char *
+strlwr(char* str)
+{
+    char* tmp = str;
+
+    for (;*tmp;++tmp)
+        *tmp = tolower((unsigned char) *tmp);
+
+    return str;
 }

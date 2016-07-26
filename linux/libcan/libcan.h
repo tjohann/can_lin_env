@@ -17,7 +17,6 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-
 #ifndef __LIBCAN_H__
 #define __LIBCAN_H__
 
@@ -27,17 +26,19 @@
 
 #include "libhelper.h"
 
-typedef struct {
-	int sfd;
-	struct sockaddr_can *addr;
-} can_node_t;
+/* can_*_socket flags */
+#define BIND_TO_SINGLE_CANIF 0x00
+#define BIND_TO_ANY_CANIF 0x01
 
-
-/* init a can node */
+/* get a can socket -> CAN_RAW */
 int
-init_can_node(can_node_t *cnode,
-	      char *ifname,
-	      int socket_typ,
-	      unsigned long can_addr);
+can_raw_socket(char *ifname, struct sockaddr_can **addr, unsigned char flags);
+/* get a can socket -> CAN_BCM */
+int
+can_bcm_socket(char *ifname, struct sockaddr_can **addr, unsigned char flags);
+
+/* set all hardware related error mask bits */
+int
+set_hw_error_mask(int fd_s);
 
 #endif

@@ -16,7 +16,7 @@ all::
 	@echo "| make get_can-utils      -> clone can-utils               | |"
 	@echo "| make get_jailhouse      -> clone jailhouse hypervisor    | |"
 	@echo "| make get_lin            -> clone lin kernel driver       | |"
-	@echo "|                                                          | |"	
+	@echo "|                                                          | |"
 	@echo "| make clean              -> clean all dir/subdirs         | |"
 	@echo "| make distclean          -> complete cleanup/delete       |/"
 	@echo "+----------------------------------------------------------+"

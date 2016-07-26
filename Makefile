@@ -21,7 +21,7 @@ all::
 	@echo "| make delete_vcan -> delete vcan0 node                    | |"
 	@echo "| make rmmod_vcan  -> unload vcan kernel driver            | |"
 	@echo "|                                                          | |"
-	@echo "| make get_external_repos -> get ALL git repos like u-boot | |"
+	@echo "| make get_external_repos -> get ALL git repos from below  | |"
 	@echo "| make get_can-utils      -> clone can-utils               | |"
 	@echo "| make get_jailhouse      -> clone jailhouse hypervisor    | |"
 	@echo "| make get_lin            -> clone lin kernel driver       | |"

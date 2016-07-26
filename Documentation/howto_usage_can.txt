@@ -1,5 +1,5 @@
 #
-# howto use net and can-utils 
+# howto use net and can-utils
 #
 
 

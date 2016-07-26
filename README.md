@@ -1,4 +1,4 @@
-Linux Realtime and Time-Triggert-System
+CAN/LIN Bus Linux Userspace Environment
 =======================================
 
 This repository is my playground around can and lin. It will include scripts and code example for different usecases on different target devices. One (for my opinion) interesting approach is to use a jailhouse bare-metal cell for can.
@@ -26,6 +26,8 @@ Below ./Documentation you find some hopefully usefull stuff.
 
       info_*.* -> some general and unsorted informations about a topic
       howto_*.* -> a more cookbook style
+
+Also make shure to have a version of can.txt (Linux-Kernel-Source-Tree/Documentation/networking/can.txt) on your desk.
 
 
 Target devices (Linux)

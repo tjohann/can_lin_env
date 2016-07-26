@@ -5,7 +5,7 @@
 CC = gcc
 CFLAGS = -Wall -O2 -g -std=gnu11 `pkg-config --cflags libcap-ng`
 #LDLIBS = -I../libhelper -L../libhelper -lhelper -lpthread -lrt `pkg-config --libs libcap-ng`
-LDLIBS = -I../libhelper 
+LDLIBS = -I../libhelper
 
 LIB = liblin.a
 OBJ = liblin.o

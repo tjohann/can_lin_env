@@ -3,17 +3,17 @@
 #
 
 CC = gcc
-CFLAGS = -Wall -Wextra -std=gnu11
-LIBS = -I../liblin -I../libhelper -L../libhelper -lhelper -L../liblin -llin -lpthread -lrt
+CFLAGS = -Wall -Wextra -std=gnu11 `pkg-config --cflags libcap-ng`
+LDLIBS = -I../liblin -I../libhelper -L../libhelper -L../liblin -lhelper -llin -lpthread -lrt `pkg-config --libs libcap-ng`
 
 PROG = lin_recv
 OBJ = lin_recv.o
 
 %.o: %.c
-	$(CC) -c -o $@ $< $(CFLAGS) $(LIBS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(LDLIBS)
 
 $(PROG): $(OBJ)
-	gcc -o $@ $^ $(CFLAGS) $(LIBS)
+	gcc -o $@ $^ $(CFLAGS) $(LDLIBS)
 
 install: $(PROG)
 	install $(PROG) $(HOME)/bin/$(PROG)

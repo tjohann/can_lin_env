@@ -3,10 +3,19 @@
 #
 
 #
+# -------------- 2016-07-26 ----------------------------------------------------
+#
+- check behaviour of setsockopt(ifname, SOL_CAN_RAW, CAN_RAW_FILTER, NULL, 0) ..
+  -> is received dactivated for ALL readers of ifname? or only for that single
+  socket?
+- bcm send and receive example compared to raw send and receive ... cpu load,
+  mem usage, timing ...
+
+
+#
 # -------------- 2016-07-20 ----------------------------------------------------
 #
-- add example script for vcan usage
-- add example script for peak-box usage
+- add example script for vcan usage                         [done -> 2016-07-21]
 - add example script to run on an arietta
 - add example script to run on a bananapi
 
