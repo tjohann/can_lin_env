@@ -3,7 +3,7 @@
 #
 
 MODULES = $(shell ls -d */ | cut -f1 -d'/')
-BUILD = linux atmel
+BUILD = linux atmel hypervisor
 
 all::
 	@echo "  +----------------------------------------------------------+"
