@@ -75,15 +75,20 @@ print_error_frames(void *arg)
 		if (ioctl(ifname_s, SIOCGSTAMP, &tv) == -1)
 			perror("ioctl in print_error_frames");
 
-		if (frame.can_id & CAN_ERR_FLAG)
-			printf("!-----! An ERROR flag is set !-----!\n");
+		if (frame.can_id & CAN_ERR_FLAG) {
+			printf("\n!-----! An ERROR flag is set !-----!\n");
 
-		printf("%s: received message -> frame.id:0x%x / frame.can_dlc:%d @ time:%s",
-		       __FUNCTION__, frame.can_id, frame.can_dlc,
-		       ctime((const time_t *) &tv.tv_sec));
+			printf("%s: received can frame -> \"frame.id:0x%x\" / \
+\"frame.can_dlc:%d\" @ \"time:%s",
+			       __FUNCTION__, frame.can_id, frame.can_dlc,
+			       ctime((const time_t *) &tv.tv_sec));
 
-		for (int i = 0; i < frame.can_dlc; i++)
-			printf("frame.data[%d] -> 0x%.2x\n", i, frame.data[i]);
+			for (int i = 0; i < frame.can_dlc; i++)
+				printf("frame.data[%d] -> 0x%.2x\n", i, frame.data[i]);
+		} else {
+			eprintf("ERROR -> something went wrong ... \
+should never see that!\n");
+		}
 	}
 
 	/* should never reached */
@@ -96,6 +101,8 @@ void
 send_cyclic_telegram(char *ifname, unsigned long can_addr,
 		     unsigned long cycle_time_ms)
 {
+	const unsigned char default_ms = 100;
+
 	int fds = can_raw_socket(ifname, NULL, 0);
 	if (fds == -1) {
 		eprintf("ERROR -> could not init can_node %s for CAN_RAW\n",
@@ -112,9 +119,15 @@ send_cyclic_telegram(char *ifname, unsigned long can_addr,
 	struct timespec t;
 	memset(&t, 0, sizeof(struct timespec));
 
-	/* sleep time 0.1 sec */
 	t.tv_sec = 0;
-	t.tv_nsec = cycle_time_ms * 1000000;
+	if (cycle_time_ms == 0) {
+		printf("no cyclic time defined, use default value:%dms\n",
+		       default_ms);
+		t.tv_nsec = default_ms * 1000000;
+	} else {
+		t.tv_nsec = cycle_time_ms * 1000000;
+		ts_norm(&t);
+	}
 
 	ssize_t send_nbytes = -1;
 	for (;;) {
@@ -192,22 +205,17 @@ main(int argc, char *argv[])
 	if (ifname == NULL)
 		usage();
 	else
-		printf("Will use %s as canif\n", ifname);
+		printf("will use %s as canif\n", ifname);
 
 	if (can_proto == NULL)
 		usage();
 	else
-		printf("Will use can_%s as can protocol\n", can_proto);
+		printf("will use can_%s as can protocol\n", can_proto);
 
 	if (can_addr == 0)
 		usage();
 	else
-		printf("Will use addr 0x%x\n", (int) can_addr);
-
-	if (cycle_time_ms == 0)
-		eprintf("No cyclic time defined");
-	else
-		printf("Cyclic time is %lu ms\n", cycle_time_ms );
+		printf("will use addr 0x%x\n", (int) can_addr);
 
 	program_name = PROGRAM_NAME;
 	strlwr(can_proto);
@@ -226,7 +234,6 @@ main(int argc, char *argv[])
 
 	if (strncmp(can_proto, "bcm", 3) == 0)
 		send_cyclic_telegram_via_bcm(ifname, can_addr, cycle_time_ms);
-
 
 	/* should never reached */
 	eprintf("ERROR -> something went wrong, you should never reach this\n");

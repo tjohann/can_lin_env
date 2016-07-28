@@ -10,10 +10,10 @@ PROG = lin_recv
 OBJ = lin_recv.o
 
 %.o: %.c
-	$(CC) -c -o $@ $< $(CFLAGS) $(LDLIBS)
+	$(CC) -g -c -o $@ $< $(CFLAGS) $(LDLIBS)
 
 $(PROG): $(OBJ)
-	gcc -o $@ $^ $(CFLAGS) $(LDLIBS)
+	$(CC) -g -o $@ $^ $(CFLAGS) $(LDLIBS)
 
 install: $(PROG)
 	install $(PROG) $(HOME)/bin/$(PROG)

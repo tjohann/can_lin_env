@@ -60,7 +60,7 @@
 #include <cap-ng.h>
 
 #define eprintf(format, ...) fprintf (stderr, format, ##__VA_ARGS__)
-
+#define NSEC_PER_SEC 1000000000
 
 /* drop all capabilitys excluding hold_cap */
 int
@@ -69,5 +69,9 @@ drop_capability(int hold_cap);
 /* string to lower */
 char *
 strlwr(char* str);
+
+/* normalize nsec and sec */
+void
+ts_norm(struct timespec *t);
 
 #endif

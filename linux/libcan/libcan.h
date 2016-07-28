@@ -41,4 +41,8 @@ can_bcm_socket(char *ifname, struct sockaddr_can **addr, unsigned char flags);
 int
 set_hw_error_mask(int fd_s);
 
+/* set can-id filter list to socket*/
+int
+set_flist(int fds, char *flist);
+
 #endif

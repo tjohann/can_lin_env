@@ -3,6 +3,13 @@
 #
 
 #
+# -------------- 2016-07-27 ----------------------------------------------------
+#
+- check if handle_error_frame thread and recv_frame_raw error check "work 
+  together" -> only one is needed?
+
+
+#
 # -------------- 2016-07-26 ----------------------------------------------------
 #
 - check behaviour of setsockopt(ifname, SOL_CAN_RAW, CAN_RAW_FILTER, NULL, 0) ..

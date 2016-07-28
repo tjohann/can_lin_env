@@ -14,5 +14,5 @@ echo "+------------------------------------------------------------+"
 echo "| Generate traffic via canplayer on vcan0 (can_sequence.txt) |"
 echo "| (infinit loop)                                             |"
 echo "+------------------------------------------------------------+"
-canplayer -l i -I record_vcan.txt
+canplayer -l i -I can_sequence.txt
 

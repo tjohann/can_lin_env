@@ -39,7 +39,6 @@ drop_capability(int hold_cap)
 	return 0;
 }
 
-
 LIBHELPER_EXPORT char *
 strlwr(char* str)
 {
@@ -49,4 +48,13 @@ strlwr(char* str)
         *tmp = tolower((unsigned char) *tmp);
 
     return str;
+}
+
+LIBHELPER_EXPORT void
+ts_norm(struct timespec *t)
+{
+	while (t->tv_nsec >= NSEC_PER_SEC) {
+		t->tv_nsec -= NSEC_PER_SEC;
+		t->tv_sec++;
+	}
 }

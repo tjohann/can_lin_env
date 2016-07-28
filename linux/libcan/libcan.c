@@ -23,7 +23,8 @@
 #define LIBCAN_EXPORT __attribute__ ((visibility ("default")))
 
 static int
-can_socket(char *ifname, struct sockaddr_can **addr, int proto, unsigned char flags)
+can_socket(char *ifname, struct sockaddr_can **addr, int proto,
+	   unsigned char flags)
 {
 	struct sockaddr_can *s = NULL;
 	int fd_s = -1;
@@ -64,7 +65,7 @@ can_socket(char *ifname, struct sockaddr_can **addr, int proto, unsigned char fl
 	if (err == -1)
 		goto error;
 
-	if (*addr != NULL)
+	if (addr != NULL)
 		*addr = s;
 
 	return fd_s;
@@ -77,13 +78,15 @@ error:
 }
 
 LIBCAN_EXPORT int
-can_raw_socket(char *ifname, struct sockaddr_can **addr, unsigned char flags)
+can_raw_socket(char *ifname, struct sockaddr_can **addr,
+	       unsigned char flags)
 {
 	return can_socket(ifname, addr, CAN_RAW, flags);
 }
 
 LIBCAN_EXPORT int
-can_bcm_socket(char *ifname, struct sockaddr_can **addr, unsigned char flags)
+can_bcm_socket(char *ifname, struct sockaddr_can **addr,
+	       unsigned char flags)
 {
 	return can_socket(ifname, addr, CAN_BCM, flags);
 }
@@ -91,15 +94,18 @@ can_bcm_socket(char *ifname, struct sockaddr_can **addr, unsigned char flags)
 LIBCAN_EXPORT int
 set_hw_error_mask(int fd_s)
 {
-	/* see include/uapi/linux/can/error.h for all error codes */
+	/*
+	 * see include/uapi/linux/can/error.h for all error codes
+	 * -> set only hardware relevant error flags
+	 */
 	can_err_mask_t err_mask = (CAN_ERR_TX_TIMEOUT |
 				   CAN_ERR_LOSTARB |
 				   CAN_ERR_CRTL |
 				   CAN_ERR_PROT |
 				   CAN_ERR_TRX |
 				   CAN_ERR_ACK |
-				   CAN_ERR_BUSOFF |
 				   CAN_ERR_BUSERROR |
+				   CAN_ERR_BUSOFF |
 				   CAN_ERR_RESTARTED
 		);
 
@@ -110,4 +116,54 @@ set_hw_error_mask(int fd_s)
 	}
 
     return 0;
+}
+
+LIBCAN_EXPORT int
+set_flist(int fds, char *flist)
+{
+	if (flist == NULL) {
+		printf("no can id filter list -> nothing to do\n");
+		return 0;
+	}
+
+	char *token, *saved;
+	struct can_filter *filter = NULL;
+	struct can_filter *tmp_filter = NULL;
+	const char delimiter = ',';
+
+	printf("try to set filter list: %s\n", flist);
+
+	int count = 0;
+	for (token = strtok_r(flist, &delimiter, &saved);
+	     token;
+	     token = strtok_r(NULL, &delimiter, &saved)) {
+		printf("token %s\n", token);
+
+		tmp_filter = realloc(filter, sizeof(struct can_filter));
+		if (tmp_filter == NULL) {
+			perror("realloc");
+			continue;
+		} else {
+			filter = tmp_filter;
+		}
+
+		/* SFF and EFF frames -> see can.txt */
+		filter[count].can_id =
+			(strtoul(token, NULL, 16) & CAN_EFF_MASK);
+		filter[count].can_mask = CAN_SFF_MASK;
+
+		count++;
+	}
+
+	if (setsockopt(fds, SOL_CAN_RAW, CAN_RAW_FILTER,
+		       filter, count * sizeof(struct can_filter)) == -1) {
+		perror("setsockopt");
+		if (filter != NULL)
+			free(filter);
+		return -1;
+	}
+
+	free(filter);
+
+	return 0;
 }

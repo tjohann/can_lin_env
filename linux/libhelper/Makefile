@@ -3,7 +3,7 @@
 #
 
 CC = gcc
-CFLAGS = -Wall -O2 -g -std=gnu11 `pkg-config --cflags libcap-ng`
+CFLAGS = -Wall -std=gnu11 `pkg-config --cflags libcap-ng`
 #LDLIBS = -lpthread -lrt `pkg-config --libs libcap-ng`
 LDLIBS =
 
@@ -11,7 +11,7 @@ LIB = libhelper.a
 OBJ = libhelper.o
 
 %.o: %.c
-	$(CC) -c -o $@ $< $(CFLAGS) $(LDLIBS)
+	$(CC) -g -c -o $@ $< $(CFLAGS) $(LDLIBS)
 
 $(LIB): $(OBJ)
 	ar rcs $@ $<

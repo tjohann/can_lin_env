@@ -10,10 +10,10 @@ PROG = can_send
 OBJ = can_send.o
 
 %.o: %.c
-	$(CC) -c -o $@ $< $(CFLAGS) $(LDLIBS)
+	$(CC) -g -c -o $@ $< $(CFLAGS) $(LDLIBS)
 
 $(PROG): $(OBJ)
-	gcc -o $@ $^ $(CFLAGS) $(LDLIBS)
+	$(CC) -g -o $@ $^ $(CFLAGS) $(LDLIBS)
 
 install: $(PROG)
 	install $(PROG) $(HOME)/bin/$(PROG)
@@ -27,6 +27,18 @@ clean:
 	rm -rf $(PROG)
 
 distclean: clean
+
+run_raw: $(PROG)
+	./can_send -i vcan0 -a 0x123 -t 100 -p raw
+
+run_bcm: $(PROG)
+	./can_send -i vcan0 -a 0x456 -t 100 -p bcm
+
+run_valgrind_raw:
+	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=20 --track-fds=yes ./can_send -i vcan0 -a 0x123 -t 100 -p raw
+
+run_valgrind_bcm:
+	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=20 --track-fds=yes ./can_send -i vcan0 -a 0x456 -t 100 -p bcm
 
 setup_vcan:
 	(../../scripts/vcan_init.sh)
