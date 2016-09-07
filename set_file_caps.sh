@@ -21,8 +21,8 @@ else
 fi
 
 # can_send
-if [ -e linux/can_recv/can_send ]; then
-    sudo setcap "cap_sys_nice=pe" ./linux/can_recv/can_send
+if [ -e linux/can_recv/can_recv ]; then
+    sudo setcap "cap_sys_nice=pe" ./linux/can_recv/can_recv
 else
     echo "./linux/can_recv/can_send does not exist"
 fi
