@@ -34,10 +34,10 @@ run_raw: $(PROG)
 run_bcm: $(PROG)
 	./can_send -i vcan0 -a 0x456 -t 100 -p bcm
 
-run_valgrind_raw:
+run_valgrind_raw: $(PROG)
 	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=20 --track-fds=yes ./can_send -i vcan0 -a 0x123 -t 100 -p raw
 
-run_valgrind_bcm:
+run_valgrind_bcm: $(PROG)
 	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=20 --track-fds=yes ./can_send -i vcan0 -a 0x456 -t 100 -p bcm
 
 setup_vcan:

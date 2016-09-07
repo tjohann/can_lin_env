@@ -49,7 +49,7 @@ lin_recv:
 	@echo "+------------------------------------------------------------+"
 	(cd $@ && $(MAKE))
 
-install:
+install: all
 	for dir in $(MODULES); do (cd $$dir && $(MAKE) $@); done
 
 uninstall:
@@ -70,4 +70,4 @@ delete_vcan:
 rmmod_vcan:
 	(../scripts/vcan_rmmod.sh)
 
-.PHONY: clean libhelper libcan can_send can_recv liblin lin_send lin_recv install uninstall setup_vcan delete_vcab rmmod_vcan
+.PHONY: clean libhelper libcan can_send can_recv liblin lin_send lin_recv uninstall setup_vcan delete_vcab rmmod_vcan

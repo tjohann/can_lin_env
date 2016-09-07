@@ -5,7 +5,7 @@
 #
 # -------------- 2016-07-27 ----------------------------------------------------
 #
-- check if handle_error_frame thread and recv_frame_raw error check "work 
+- check if handle_error_frame thread and recv_frame_raw error check "work
   together" -> only one is needed?
 
 

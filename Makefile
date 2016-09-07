@@ -3,7 +3,7 @@
 #
 
 MODULES = $(shell ls -d */ | cut -f1 -d'/')
-BUILD = linux atmel hypervisor
+BUILD = linux bare_metal hypervisor
 
 all::
 	@echo "  +----------------------------------------------------------+"
@@ -43,14 +43,14 @@ distclean::
 
 install::
 	for dir in $(BUILD); do (cd $$dir && $(MAKE) $@); done
-	#(./set_file_caps.sh)
+	(./set_file_caps.sh)
 
 uninstall::
 	for dir in $(BUILD); do (cd $$dir && $(MAKE) $@); done
 
 set_caps::
-	@echo "Nothing to do"
-	#(./set_file_caps.sh)
+	@echo "Set caps to all binary"
+	(./set_file_caps.sh)
 
 setup_vcan::
 	(./scripts/vcan_init.sh)

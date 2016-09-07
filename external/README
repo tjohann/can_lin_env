@@ -1,7 +1,7 @@
 README external repos
 =========
 
-Content cloned via script get_external_git_repos.sh (all additional repos) or via make tag like "make get_uboot" for u-boot repo
+Content cloned via script get_external_git_repos.sh (all additional repos) or via make tag like "make get_jailhouse" for jailhouse repo
 
 
 Addtional Repos

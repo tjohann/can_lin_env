@@ -49,7 +49,7 @@ main(int argc, char *argv[])
 			usage();
 			break;
 		default:
-			eprintf("ERROR: no valid argument\n");
+			eprintf("ERROR -> no valid argument\n");
 			usage();
 		}
 	}

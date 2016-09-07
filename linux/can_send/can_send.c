@@ -55,7 +55,7 @@ print_error_frames(void *arg)
 
 	/* set all hardware related error mask bits */
 	if (set_hw_error_mask(ifname_s) == -1) {
-		eprintf("ERROR: could not set error mask\n");
+		eprintf("ERROR -> could not set error mask\n");
 		return NULL;
 	}
 
@@ -197,7 +197,7 @@ main(int argc, char *argv[])
 			usage();
 			break;
 		default:
-			eprintf("ERROR: no valid argument\n");
+			eprintf("ERROR -> no valid argument\n");
 			usage();
 		}
 	}
