@@ -70,7 +70,7 @@ can_socket(char *ifname, struct sockaddr_can **addr, int proto,
 
 	return fd_s;
 error:
-	perror("init_can_raw_socket()");
+	perror("can_socket()");
 	if (s)
 		free(s);
 

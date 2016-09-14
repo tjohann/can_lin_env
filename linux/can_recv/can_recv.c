@@ -49,8 +49,11 @@ print_error_frames(void *arg)
 	struct can_filter rfilter;
 	rfilter.can_id   = 0x00;
 	rfilter.can_mask = CAN_SFF_MASK;
-	setsockopt(ifname_s, SOL_CAN_RAW, CAN_RAW_FILTER,
-		   &rfilter, sizeof(rfilter));
+	if (setsockopt(ifname_s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter,
+		       sizeof(rfilter)) == -1) {
+		baa_error_msg("could not set can filter");
+		return NULL;
+	}
 
 	/* set all hardware related error mask bits */
 	if (set_hw_error_mask(ifname_s) == -1) {
