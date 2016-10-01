@@ -51,7 +51,7 @@ print_error_frames(void *arg)
 	rfilter.can_mask = CAN_SFF_MASK;
 	if (setsockopt(ifname_s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter,
 		       sizeof(rfilter)) == -1) {
-		baa_error_msg("could not set can filter");
+		eprintf("could not set can filter");
 		return NULL;
 	}
 
