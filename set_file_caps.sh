@@ -7,6 +7,11 @@ echo "| --> prepare your password for sudo     |"
 echo "+----------------------------------------+"
 echo " "
 
+sudo -v
+# keep-alive
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+
 # can_recv
 if [ -e linux/can_recv/can_recv ]; then
     sudo setcap "cap_sys_nice=pe" ./linux/can_recv/can_recv
