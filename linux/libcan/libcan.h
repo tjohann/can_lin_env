@@ -1,6 +1,6 @@
 /*
   GPL
-  (c) 2016, thorsten.johannvorderbrueggen@t-online.de
+  (c) 2016-2021, thorsten.johannvorderbrueggen@t-online.de
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 #include <linux/can/error.h>
+#include <linux/sockios.h>
 
 #include "libhelper.h"
 
