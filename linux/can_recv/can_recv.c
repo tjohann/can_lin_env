@@ -74,7 +74,7 @@ print_error_frames(void *arg)
 			continue;
 		}
 
-		if (ioctl(ifname_s, SIOCGSTAMP, &tv) == -1)
+		if (ioctl(ifname_s, SIOCGSTAMP_OLD, &tv) == -1)
 			perror("ioctl in print_error_frames");
 
 		if (frame.can_id & CAN_ERR_FLAG) {
@@ -130,7 +130,7 @@ recv_frame_raw(char *ifname, char *flist)
 			printf("received %d bytes\n", (int) n);
 		}
 
-		ioctl(fds, SIOCGSTAMP, &tv);
+		ioctl(fds, SIOCGSTAMP_OLD, &tv);
 
 		/* TODO: check if this really occures due to error handle thread */
 		if (frame.can_id & CAN_ERR_FLAG)

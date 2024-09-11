@@ -1,6 +1,6 @@
 /*
   GPL
-  (c) 2015-2016, thorsten.johannvorderbrueggen@t-online.de
+  (c) 2015-2024, thorsten.johannvorderbrueggen@t-online.de
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ print_error_frames(void *arg)
 			continue;
 		}
 
-		if (ioctl(ifname_s, SIOCGSTAMP, &tv) == -1)
+		if (ioctl(ifname_s, SIOCGSTAMP_OLD, &tv) == -1)
 			perror("ioctl in print_error_frames");
 
 		if (frame.can_id & CAN_ERR_FLAG) {
